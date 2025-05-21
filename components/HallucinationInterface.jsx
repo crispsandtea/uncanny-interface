@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function HallucinationInterface() {
   const [queryMode, setQueryMode] = useState(false);
   const [input, setInput] = useState("");
+  const [response, setResponse] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Simulate handling input (e.g. calling an API)
+    setResponse(`You queried: ${input}`);
+    setInput("");
+  };
 
   return (
     <div
@@ -18,19 +26,35 @@ export default function HallucinationInterface() {
       }}
     >
       {queryMode ? (
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter your prompt..."
-          style={{
-            padding: "1rem",
-            fontSize: "1.2rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            width: "300px",
-          }}
-        />
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your prompt..."
+            style={{
+              padding: "1rem",
+              fontSize: "1rem",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              width: "300px",
+              marginBottom: "1rem",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              padding: "0.75rem 1.5rem",
+              fontSize: "1rem",
+              backgroundColor: "#99f0ff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Submit
+          </button>
+        </form>
       ) : (
         <button
           onClick={() => setQueryMode(true)}
@@ -45,6 +69,10 @@ export default function HallucinationInterface() {
         >
           Query
         </button>
+      )}
+
+      {response && (
+        <p style={{ marginTop: "2rem", fontSize: "1rem", color: "#fff" }}>{response}</p>
       )}
     </div>
   );
