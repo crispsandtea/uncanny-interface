@@ -10,14 +10,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ inputs: topic }),
-    });
+const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ inputs: topic }),
+});
 
     const text = await response.text();
     console.log("🧠 HF raw response:", text);
