@@ -5,7 +5,6 @@ export default function HallucinationInterface() {
   const floatingRef = useRef(null);
   const cursorRef = useRef(null);
 
-  // 🔊 Speak + distort audio
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.pitch = 0.8;
@@ -14,38 +13,30 @@ export default function HallucinationInterface() {
     speechSynthesis.speak(utterance);
   };
 
-  // 🧠 Submit query to API
-const handleSubmit = async (e) => {
-  e.preventDefault(); // This prevents the page reload
-  console.log("🔥 Form submitted");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("🔥 Form submitted");
 
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  try {
-    const res = await fetch("https://uncanny-interface.onrender.com/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: input }),
-    });
+    try {
+      const res = await fetch("https://uncanny-interface.onrender.com/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: input }),
+      });
 
-    const data = await res.json();
-    const result = data.response || "⚠️ No output from model";
+      const data = await res.json();
+      const result = data.generated_text || "⚠️ No output from model";
 
-    speak(result);
-    spawnGlitchWords(result);
-    setInput("");
-  } catch (err) {
-    console.error("Failed to fetch:", err);
-  }
-};
+      speak(result);
+      spawnGlitchWords(result);
+      setInput("");
+    } catch (err) {
+      console.error("Failed to fetch:", err);
+    }
+  };
 
-
-
-
-
-
-
-  // 🌟 Floating glitchy words
   const spawnGlitchWords = (text) => {
     const words = text.split(" ");
     const container = floatingRef.current;
@@ -68,7 +59,6 @@ const handleSubmit = async (e) => {
     });
   };
 
-  // 🧿 Custom red diamond cursor
   useEffect(() => {
     const moveCursor = (e) => {
       if (cursorRef.current) {
@@ -82,30 +72,25 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-      {/* Neon Input Box */}
-<form
-  onSubmit={handleSubmit}
-  style={{
-    position: "fixed",
-    bottom: "40px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-  }}
->
-  <input
-    type="text"
-    placeholder="Enter your prompt"
-    value={input}
-    onChange={(e) => setInput(e.target.value)}
-    className="hallucination-input"
-  />
-</form>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          position: "fixed",
+          bottom: "40px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Enter your prompt"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="hallucination-input"
+        />
+      </form>
 
-
-
-
-      {/* Floating Words */}
       <div
         ref={floatingRef}
         style={{
@@ -119,7 +104,6 @@ const handleSubmit = async (e) => {
         }}
       />
 
-      {/* Red Diamond Cursor */}
       <div
         ref={cursorRef}
         style={{
@@ -148,7 +132,6 @@ const handleSubmit = async (e) => {
         </svg>
       </div>
 
-      {/* Styles */}
       <style jsx global>{`
         * {
           cursor: none !important;
