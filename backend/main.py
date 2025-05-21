@@ -21,8 +21,8 @@ generator = None
 def load_model():
     global generator
     generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
-    # Optional: Run a dummy generation to warm things up
-    generator("Hello", max_length=5)
+    generator("Hello", max_length=5)  # optional warmup
+
 
 @app.get("/")
 async def root():
