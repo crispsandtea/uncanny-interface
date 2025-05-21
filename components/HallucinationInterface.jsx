@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 
 export default function HallucinationInterface() {
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const floatingRef = useRef(null);
   const cursorRef = useRef(null);
 
@@ -15,10 +16,9 @@ export default function HallucinationInterface() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔥 Form submitted");
-
     if (!input.trim()) return;
 
+    setLoading(true);
     try {
       const res = await fetch("https://uncanny-interface-1.onrender.com/generate", {
         method: "POST",
@@ -34,6 +34,8 @@ export default function HallucinationInterface() {
       setInput("");
     } catch (err) {
       console.error("Failed to fetch:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,21 +117,45 @@ export default function HallucinationInterface() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <svg width="100%" height="100%" viewBox="0 0 100 100">
-          <polygon
-            points="50,0 100,50 50,100 0,50"
-            fill="none"
-            stroke="#ff3e3e"
-            strokeWidth="10"
-            filter="url(#glow)"
-          />
-          <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ff3e3e" />
-              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#ff3e3e" />
-            </filter>
-          </defs>
-        </svg>
+        {loading ? (
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <circle
+              cx="50"
+              cy="50"
+              r="35"
+              stroke="#99f0ff"
+              strokeWidth="10"
+              fill="none"
+              strokeDasharray="164"
+              strokeDashoffset="60"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0 50 50"
+                to="360 50 50"
+                dur="1s"
+                repeatCount="indefinite"
+              />
+            </circle>
+          </svg>
+        ) : (
+          <svg width="100%" height="100%" viewBox="0 0 100 100">
+            <polygon
+              points="50,0 100,50 50,100 0,50"
+              fill="none"
+              stroke="#ff3e3e"
+              strokeWidth="10"
+              filter="url(#glow)"
+            />
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ff3e3e" />
+                <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#ff3e3e" />
+              </filter>
+            </defs>
+          </svg>
+        )}
       </div>
 
       <style jsx global>{`
