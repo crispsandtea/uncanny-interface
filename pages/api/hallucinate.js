@@ -1,8 +1,4 @@
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// pages/api/hallucinate.js
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -11,47 +7,39 @@ export default async function handler(req, res) {
 
   const { topic } = req.body;
 
-  if (!topic || topic.trim() === "") {
+  if (!topic) {
     return res.status(400).json({ error: 'Missing "topic" in request body' });
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `
-You are a surreal, poetic interface. Respond with dreamlike, cryptic fragments — not literal answers.
-Avoid repetition. Avoid silence. Do not say you refuse.
-Always respond with *something* — even if broken or eerie.
-        `.trim(),
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json",
         },
-        {
-          role: "user",
-          content: `Prompt: "${topic}"`,
-        },
-      ],
-      temperature: 1.2,
-      max_tokens: 180,
-    });
+        body: JSON.stringify({
+          inputs: `The user speaks of: "${topic}". Respond in a strange, cryptic, non-literal tone.`,
+        }),
+      }
+    );
 
-    const result = completion.choices?.[0]?.message?.content?.trim();
-
-    // Debug: log the actual API output
-    console.log("OpenAI Response:", result);
-
-    if (!result || result === "") {
-      return res.status(200).json({
-        result: "It flickered, but spoke nothing you could grasp.",
-      });
+    if (!response.ok) {
+      const err = await response.text();
+      return res.status(500).json({ error: `HuggingFace error: ${err}` });
     }
 
-    return res.status(200).json({ result });
-  } catch (error) {
-    console.error("OpenAI API Error:", error);
-    return res.status(500).json({
-      result: "The channel was static. No voice emerged.",
-    });
+    const data = await response.json();
+    const result =
+      Array.isArray(data) && data[0]?.generated_text
+        ? data[0].generated_text
+        : "It said nothing.";
+
+    res.status(200).json({ result });
+  } catch (err) {
+    console.error("HuggingFace API Error:", err);
+    res.status(500).json({ error: "Failed to fetch from HuggingFace API." });
   }
 }
