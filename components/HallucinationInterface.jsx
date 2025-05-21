@@ -9,16 +9,20 @@ export default function HallucinationInterface() {
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.pitch = 0.8;
-    utterance.rate = 0.95;
+    utterance.rate = 0.75;
     utterance.volume = 1;
     speechSynthesis.speak(utterance);
   };
 
   // 🧠 Submit query to API
 const handleSubmit = async (e) => {
-  e.preventDefault(); // only this now
+  e.preventDefault();
+  console.log("Form submitted"); // 🐛 Add this line
 
-  if (!input.trim()) return;
+  if (!input.trim()) {
+    console.log("Empty input, aborting"); // 🐛
+    return;
+  }
 
   try {
     const res = await fetch("https://uncanny-interface.onrender.com/generate", {
@@ -28,8 +32,9 @@ const handleSubmit = async (e) => {
     });
 
     const data = await res.json();
-    const result = data.response || "⚠️ No output from model";
+    console.log("API response:", data); // 🐛
 
+    const result = data.response || "⚠️ No output from model";
     speak(result);
     spawnGlitchWords(result);
     setInput("");
@@ -37,6 +42,7 @@ const handleSubmit = async (e) => {
     console.error("Failed to fetch:", err);
   }
 };
+
 
 
 
@@ -97,6 +103,7 @@ const handleSubmit = async (e) => {
     className="hallucination-input"
   />
 </form>
+
 
       {/* Floating Words */}
       <div
