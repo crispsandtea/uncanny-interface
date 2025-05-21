@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 
 export default function HallucinationInterface() {
   const [input, setInput] = useState("");
+  const [speaking, setSpeaking] = useState(false);
   const floatingRef = useRef(null);
 
   const handleSubmit = async (e) => {
@@ -11,18 +12,20 @@ export default function HallucinationInterface() {
 
       const responseText = await getOpenAIResponse(input);
 
-      // Speak the hallucinated response
+      // 🔊 Speak
       const utterance = new SpeechSynthesisUtterance(responseText);
+      utterance.onstart = () => setSpeaking(true);
+      utterance.onend = () => setSpeaking(false);
       speechSynthesis.speak(utterance);
 
-      // Float the glowing words
+      // 🌟 Words
       spawnGlowingWords(responseText);
 
-      setInput(""); // Clear prompt input
+      setInput("");
     }
   };
 
-  // 🔌 Call your /api/hallucinate route
+  // 🔁 Real API Call
   async function getOpenAIResponse(prompt) {
     try {
       const res = await fetch("/api/hallucinate", {
@@ -32,20 +35,14 @@ export default function HallucinationInterface() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        console.error("API error:", data.error);
-        return "The interface refuses to answer.";
-      }
-
-      return data.result || "Something emerged from the fog...";
+      return data.result || "The interface refused to answer.";
     } catch (err) {
-      console.error("Fetch failed:", err);
-      return "The signal flickered and vanished.";
+      console.error(err);
+      return "The interface blinked, then vanished.";
     }
   }
 
-  // ✨ Float words across the screen
+  // ✨ Floating word logic
   function spawnGlowingWords(text) {
     const words = text.split(" ");
     const container = floatingRef.current;
@@ -58,19 +55,22 @@ export default function HallucinationInterface() {
       span.style.top = `${Math.random() * 100}%`;
       span.style.fontSize = `${12 + Math.random() * 18}px`;
       span.style.color = "#99f0ff";
-      span.style.opacity = 0.8;
+      span.style.opacity = 0.85;
       span.style.pointerEvents = "none";
       span.style.animation = "floatWord 6s ease-out forwards";
       span.style.textShadow = "0 0 8px #99f0ff";
 
       container.appendChild(span);
-      setTimeout(() => container.removeChild(span), 6000);
+
+      setTimeout(() => {
+        container.removeChild(span);
+      }, 6000);
     });
   }
 
   return (
-    <>
-      {/* Input */}
+    <div className={speaking ? "speaking" : ""}>
+      {/* Input Box */}
       <div
         style={{
           position: "fixed",
@@ -89,15 +89,16 @@ export default function HallucinationInterface() {
           style={{
             padding: "1rem",
             fontSize: "1rem",
-            width: "300px",
+            width: "320px",
             borderRadius: "12px",
             border: "1px solid #ccc",
             backgroundColor: "white",
+            boxShadow: "0 0 12px rgba(153, 240, 255, 0.6)",
           }}
         />
       </div>
 
-      {/* Floating words */}
+      {/* Floating Word Container */}
       <div
         ref={floatingRef}
         style={{
@@ -112,7 +113,7 @@ export default function HallucinationInterface() {
         }}
       />
 
-      {/* Animation */}
+      {/* Styles */}
       <style jsx>{`
         @keyframes floatWord {
           0% {
@@ -127,7 +128,20 @@ export default function HallucinationInterface() {
             transform: translateY(-80px) scale(1.5);
           }
         }
+
+        .speaking {
+          animation: screenGlitch 0.08s infinite alternate;
+        }
+
+        @keyframes screenGlitch {
+          0% {
+            filter: hue-rotate(0deg) brightness(1);
+          }
+          100% {
+            filter: hue-rotate(15deg) brightness(1.07);
+          }
+        }
       `}</style>
-    </>
+    </div>
   );
 }
