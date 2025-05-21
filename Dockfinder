@@ -17,6 +17,5 @@ RUN pip install --upgrade pip && \
 # Copy backend source code into container
 COPY backend/ .
 
-# Start the FastAPI app using Gunicorn and Uvicorn worker
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "backend.main:app", "--bind", "0.0.0.0:10000"]
-
+# ✅ Corrected CMD — binds to 0.0.0.0:$PORT
+CMD sh -c "gunicorn -k uvicorn.workers.UvicornWorker backend.main:app --bind 0.0.0.0:$PORT"
