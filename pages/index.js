@@ -1,5 +1,6 @@
 import { useState } from "react";
-import HallucinationInterface from "../components/HallucinationInterface";
+import dynamic from "next/dynamic";
+const HallucinationInterface = dynamic(() => import("../components/HallucinationInterface"), { ssr: false });
 
 export default function Home() {
   const [hallucination, setHallucination] = useState(null);
@@ -18,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative h-screen w-screen bg-black overflow-hidden">
+    <main className="relative h-screen w-screen bg-black text-white">
       <button
         onClick={triggerHallucination}
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded"
@@ -32,8 +33,6 @@ export default function Home() {
           onDone={() => setHallucination(null)}
         />
       )}
-
-      {/* Optional: add orb here or hook it into hallucination state */}
     </main>
   );
 }
