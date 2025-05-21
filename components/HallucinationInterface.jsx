@@ -16,9 +16,7 @@ export default function HallucinationInterface() {
 
   // 🧠 Submit query to API
 const handleSubmit = async (e) => {
-  if (e.key !== "Enter") return;
-
-  e.preventDefault();
+  e.preventDefault(); // only this now
 
   if (!input.trim()) return;
 
@@ -39,6 +37,7 @@ const handleSubmit = async (e) => {
     console.error("Failed to fetch:", err);
   }
 };
+
 
 
 
@@ -80,24 +79,24 @@ const handleSubmit = async (e) => {
   return (
     <>
       {/* Neon Input Box */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "40px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Enter your prompt"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleSubmit}
-          className="hallucination-input"
-        />
-      </div>
+      <form
+  onSubmit={handleSubmit}
+  style={{
+    position: "fixed",
+    bottom: "40px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 10,
+  }}
+>
+  <input
+    type="text"
+    placeholder="Enter your prompt"
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    className="hallucination-input"
+  />
+</form>
 
       {/* Floating Words */}
       <div
