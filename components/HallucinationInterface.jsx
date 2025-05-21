@@ -8,6 +8,7 @@ export default function UncannyBackground() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
     function resizeCanvas() {
@@ -15,8 +16,8 @@ export default function UncannyBackground() {
       canvas.height = window.innerHeight;
     }
 
-    window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     mouse.current = {
       x: window.innerWidth / 2,
@@ -90,7 +91,7 @@ export default function UncannyBackground() {
           left: 0,
           width: "100vw",
           height: "100vh",
-          zIndex: -1, // ⬅️ CRUCIAL: send it behind everything
+          zIndex: -1,
         }}
       />
       <div
@@ -105,8 +106,8 @@ export default function UncannyBackground() {
           marginTop: "-30px",
           background: "radial-gradient(circle, #99f0ff 0%, #000 70%)",
           borderRadius: "50%",
-          zIndex: -1, // ⬅️ Same: keep it in the back
-          pointerEvents: "none", // ⬅️ Don't block clicks
+          zIndex: -1,
+          pointerEvents: "none",
         }}
       />
     </>
