@@ -13,7 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-generator = pipeline("text-generation", model="gpt2")
+generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
 
 @app.get("/")
 async def root():
