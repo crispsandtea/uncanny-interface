@@ -1,5 +1,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import UncannyBackground from "../components/UncannyBackground";
+
 const HallucinationInterface = dynamic(() => import("../components/HallucinationInterface"), { ssr: false });
 
 export default function Home() {
@@ -13,19 +15,22 @@ export default function Home() {
   ];
 
   const triggerHallucination = () => {
-    const response =
-      responses[Math.floor(Math.random() * responses.length)];
+    const response = responses[Math.floor(Math.random() * responses.length)];
     setHallucination(response);
   };
 
   return (
-    <main className="relative h-screen w-screen bg-black text-white">
-      <button
-        onClick={triggerHallucination}
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded"
-      >
-        Query
-      </button>
+    <main className="relative h-screen w-screen text-white bg-black overflow-hidden">
+      <UncannyBackground />
+
+      {!hallucination && (
+        <button
+          onClick={triggerHallucination}
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded z-10"
+        >
+          Query
+        </button>
+      )}
 
       {hallucination && (
         <HallucinationInterface
