@@ -10,22 +10,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ inputs: topic }),
-    });
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ inputs: topic }),
+      }
+    );
 
     const data = await response.json();
 
-    if (data.error) {
-      return res.status(500).json({ error: data.error });
-    }
+    console.log("🧠 HF API response:", data);
 
-    const result = Array.isArray(data) ? data[0].generated_text : data.generated_text || "No response";
+    // Adjust this depending on the model's response format
+    const result =
+      data?.[0]?.generated_text || data?.generated_text || "No meaningful response";
+
     res.status(200).json({ result });
   } catch (error) {
     console.error("Hugging Face API Error:", error);
