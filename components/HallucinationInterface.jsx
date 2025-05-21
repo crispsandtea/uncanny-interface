@@ -5,7 +5,6 @@ export default function HallucinationInterface({ text, onDone }) {
   const [opacity, setOpacity] = useState(1);
   const indexRef = useRef(0);
 
-  // Typewriter effect
   useEffect(() => {
     if (!text) return;
 
@@ -16,7 +15,6 @@ export default function HallucinationInterface({ text, onDone }) {
       if (indexRef.current >= text.length) {
         clearInterval(interval);
         setTimeout(() => {
-          // Start fading
           let fade = setInterval(() => {
             setOpacity((prev) => {
               if (prev <= 0) {
@@ -27,9 +25,9 @@ export default function HallucinationInterface({ text, onDone }) {
               return prev - 0.01;
             });
           }, 50);
-        }, 1000); // Delay before fading
+        }, 1000);
       }
-    }, 30); // Speed of typing
+    }, 30);
 
     return () => clearInterval(interval);
   }, [text]);
