@@ -7,13 +7,17 @@ app = FastAPI()
 # CORS for frontend-backend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this to your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 generator = pipeline("text-generation", model="gpt2")
+
+@app.get("/")
+async def root():
+    return {"message": "Backend is running!"}
 
 @app.post("/generate")
 async def generate_text(request: Request):
