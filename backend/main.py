@@ -14,7 +14,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
+# Load model globally
+generator = None
+
+@app.on_event("startup")
+def load_model():
+    global generator
+    generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
+    # Optional: Run a dummy generation to warm things up
+    generator("Hello", max_length=5)
 
 @app.get("/")
 async def root():
@@ -27,7 +35,6 @@ async def generate_text(request: Request):
     result = generator(prompt, max_length=100, num_return_sequences=1, truncation=True)
     return {"generated_text": result[0]["generated_text"]}
 
-# --- Run the app with the dynamic port ---
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
