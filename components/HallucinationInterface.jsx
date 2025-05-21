@@ -15,27 +15,29 @@ export default function HallucinationInterface() {
   };
 
   // 🧠 Submit query to API
-  const handleSubmit = async (e) => {
-    if (e.key === "Enter" && input.trim()) {
-      e.preventDefault();
+const handleSubmit = async (e) => {
+  if (e.key === "Enter" && input.trim()) {
+    e.preventDefault();
 
-      try {
-        const res = await fetch("/api/hallucinate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ topic: input }),
-        });
-        const data = await res.json();
-        const result = data.result || "⚠️ No output from model";
+    try {
+      const res = await fetch("https://uncanny-interface.onrender.com/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: input }),
+      });
 
-        speak(result);
-        spawnGlitchWords(result);
-        setInput("");
-      } catch (err) {
-        console.error("Failed to fetch:", err);
-      }
+      const data = await res.json();
+      const result = data.generated_text || "⚠️ No output from model";
+
+      speak(result);
+      spawnGlitchWords(result);
+      setInput("");
+    } catch (err) {
+      console.error("Failed to fetch:", err);
     }
-  };
+  }
+};
+
 
   // 🌟 Floating glitchy words
   const spawnGlitchWords = (text) => {
