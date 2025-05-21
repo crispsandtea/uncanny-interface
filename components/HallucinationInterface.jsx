@@ -17,7 +17,7 @@ export default function HallucinationInterface() {
   // 🧠 Submit query to API
 const handleSubmit = async (e) => {
   e.preventDefault(); // 🔥 THIS is what makes Enter work in a <form>
-
+  console.log("🔥 handleSubmit triggered");
   if (!input.trim()) return;
 
   console.log("🚀 Submitting:", input);
