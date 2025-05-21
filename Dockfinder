@@ -1,0 +1,21 @@
+# Use official Python base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies (for building some Python packages)
+RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements from backend folder
+COPY backend/requirements.txt ./requirements.txt
+
+# Install Python dependencies (including from PyTorch CPU index)
+RUN pip install --upgrade pip && \
+    pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+
+# Copy backend source code into container
+COPY backend/ .
+
+# Start the FastAPI app using Gunicorn and Uvicorn worker
+CMD ["sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker backend.main:app --bind 0.0.0.0:$PORT"]
