@@ -29,11 +29,12 @@ export default function Home() {
 
       {!hallucination && (
         <button
-          onClick={triggerHallucination}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded z-10"
-        >
-          Query
-        </button>
+  onClick={triggerHallucination}
+  className="fixed bottom-40 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded z-10"
+>
+  Communication
+</button>
+
       )}
 
       {hallucination && (
