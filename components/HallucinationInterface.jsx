@@ -1,54 +1,109 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 
-export default function HallucinationInterface() {
-  const [query, setQuery] = useState("");
+export default function UncannyBackground() {
+  const canvasRef = useRef(null);
+  const eyeRef = useRef(null);
+  const mouse = useRef({ x: 0, y: 0 });
+  const orbs = useRef([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Query submitted:", query);
-    // Handle the query submission logic here
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    mouse.current = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    };
+
+    for (let i = 0; i < 40; i++) {
+      orbs.current.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        baseR: 4 + Math.random() * 6,
+        r: 0,
+        phase: Math.random() * Math.PI * 2,
+        dx: 0,
+        dy: 0,
+        opacity: 0.3 + Math.random() * 0.4,
+      });
+    }
+
+    function drawOrbs() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const time = Date.now() * 0.002;
+
+      orbs.current.forEach((orb) => {
+        const distX = (mouse.current.x - orb.x) * 0.002;
+        const distY = (mouse.current.y - orb.y) * 0.002;
+        orb.dx += distX;
+        orb.dy += distY;
+        orb.x += orb.dx;
+        orb.y += orb.dy;
+        orb.dx *= 0.94;
+        orb.dy *= 0.94;
+        orb.r = orb.baseR + Math.sin(time + orb.phase) * 1.5;
+
+        ctx.beginPath();
+        ctx.arc(orb.x, orb.y, orb.r, 0, Math.PI * 2, false);
+        ctx.fillStyle = `rgba(153, 240, 255, ${orb.opacity})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(drawOrbs);
+    }
+    drawOrbs();
+
+    const handleMouseMove = (e) => {
+      mouse.current.x = e.clientX;
+      mouse.current.y = e.clientY;
+      const x = (e.clientX / window.innerWidth - 0.5) * 80;
+      const y = (e.clientY / window.innerHeight - 0.5) * 80;
+      eyeRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 10, // above canvas and other elements
-        textAlign: "center",
-      }}
-    >
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ask something..."
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            marginRight: "10px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            backgroundColor: "#0070f3",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Query
-        </button>
-      </form>
-    </div>
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "fixed",
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+          pointerEvents: "none", // ⛔ important to allow clicks
+        }}
+      />
+      <div
+        ref={eyeRef}
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          width: "60px",
+          height: "60px",
+          marginLeft: "-30px",
+          marginTop: "-30px",
+          background: "radial-gradient(circle, #99f0ff 0%, #000 70%)",
+          borderRadius: "50%",
+          zIndex: 1,
+          pointerEvents: "none", // ⛔ allow clicks to pass through
+        }}
+      />
+    </>
   );
 }
