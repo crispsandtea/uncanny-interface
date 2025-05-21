@@ -10,14 +10,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ inputs: topic }),
-    });
+const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ inputs: topic }),
+});
+
 
     const text = await response.text();
 
