@@ -3,19 +3,19 @@ import { useEffect, useRef, useState } from "react";
 export default function UncannyBackground() {
   const [isClient, setIsClient] = useState(false);
 
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const eyeRef = useRef(null);
+  const mouse = useRef({ x: 0, y: 0 });
+  const orbs = useRef([]);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (!isClient) return null; // 🛑 Prevents SSR crash
-
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const eyeRef = useRef(null);
-  const mouse = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const orbs = useRef([]);
-
   useEffect(() => {
+    if (!isClient) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
@@ -23,10 +23,17 @@ export default function UncannyBackground() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
+
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
+    mouse.current = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    };
+
     // Generate orbs
+    orbs.current = [];
     for (let i = 0; i < 40; i++) {
       orbs.current.push({
         x: Math.random() * canvas.width,
@@ -70,14 +77,19 @@ export default function UncannyBackground() {
       mouse.current.y = e.clientY;
       const x = (e.clientX / window.innerWidth - 0.5) * 80;
       const y = (e.clientY / window.innerHeight - 0.5) * 80;
-      eyeRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      if (eyeRef.current) {
+        eyeRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      }
     };
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
+      window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [isClient]);
+
+  if (!isClient) return null;
 
   return (
     <>
