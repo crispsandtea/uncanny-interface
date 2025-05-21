@@ -20,14 +20,14 @@ const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("https://uncanny-interface.onrender.com/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input }),
-      });
+const res = await fetch("https://uncanny-interface.onrender.com/generate", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ prompt: input }), // prompt key must match backend
+});
+const data = await res.json();
+const result = data.generated_text || "⚠️ No output from model";
 
-      const data = await res.json();
-      const result = data.generated_text || "⚠️ No output from model";
 
       speak(result);
       spawnGlitchWords(result);
