@@ -2,7 +2,11 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import UncannyBackground from "../components/UncannyBackground";
 
-const HallucinationInterface = dynamic(() => import("../components/HallucinationInterface"), { ssr: false });
+const HallucinationInterface = dynamic(
+  () => import("../components/HallucinationInterface").then(mod => mod.default),
+  { ssr: false }
+);
+
 
 export default function Home() {
   const [hallucination, setHallucination] = useState(null);
