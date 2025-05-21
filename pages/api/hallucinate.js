@@ -42,3 +42,14 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "An error occurred while generating text." });
   }
 }
+
+const text = await response.text();
+console.log("🧠 HF raw response:", text);
+
+let data;
+try {
+  data = JSON.parse(text);
+} catch (jsonError) {
+  return res.status(500).json({ error: text });
+}
+
