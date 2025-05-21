@@ -20,4 +20,4 @@ async def generate_text(request: Request):
     data = await request.json()
     prompt = data.get("prompt", "")
     result = generator(prompt, max_length=100, num_return_sequences=1)
-    return {"response": result[0]["generated_text"]}
+    return {"generated_text": result[0]["generated_text"]}
