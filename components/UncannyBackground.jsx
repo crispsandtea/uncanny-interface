@@ -1,6 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function UncannyBackground() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null; // 🛑 Prevents SSR crash
+
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const eyeRef = useRef(null);
