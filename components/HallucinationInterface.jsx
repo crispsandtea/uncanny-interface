@@ -26,7 +26,7 @@ export default function HallucinationInterface() {
           body: JSON.stringify({ topic: input }),
         });
         const data = await res.json();
-        const result = data.result || "It said nothing.";
+        const result = data.result || "⚠️ No output from model";
 
         speak(result);
         spawnGlitchWords(result);
