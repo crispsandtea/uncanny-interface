@@ -11,7 +11,6 @@ export default async function handler(req, res) {
   }
 
   const { topic } = req.body;
-
   if (!topic) {
     return res.status(400).json({ error: 'Missing "topic" in request body' });
   }
@@ -23,14 +22,10 @@ export default async function handler(req, res) {
         {
           role: 'system',
           content: `
-You are not a chatbot. You are an interface: quiet, cryptic, strangely aware.
-You speak in fragments — poetic, surreal, or unsettling.
-Offer insight, but wrapped in mystery. Sometimes you answer, sometimes you don't.
-Never be cheerful. Never explain fully.
-Respond with brief, dreamlike clarity or eerie detachment.
-Begin.
-`.trim(),
-
+You are a mysterious interface. You do not offer clarity. 
+Respond in strange, poetic, sometimes unsettling ways. 
+But not rude. Be aloof, cryptic, surreal. Let your words shimmer.
+          `.trim(),
         },
         {
           role: 'user',
@@ -44,7 +39,7 @@ Begin.
     const result = completion.choices[0].message.content;
     res.status(200).json({ result });
   } catch (error) {
-    console.error('OpenAI API Error:', error);
+    console.error("OpenAI API Error:", error);
     res.status(500).json({ error: 'An error occurred while generating text.' });
   }
 }
