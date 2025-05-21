@@ -1,48 +1,54 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-export default function HallucinationInterface({ text, onDone }) {
-  const [displayed, setDisplayed] = useState("");
-  const [opacity, setOpacity] = useState(1);
-  const indexRef = useRef(0);
+export default function HallucinationInterface() {
+  const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    if (!text) return;
-
-    const interval = setInterval(() => {
-      indexRef.current++;
-      setDisplayed(text.slice(0, indexRef.current));
-
-      if (indexRef.current >= text.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          let fade = setInterval(() => {
-            setOpacity((prev) => {
-              if (prev <= 0) {
-                clearInterval(fade);
-                onDone?.();
-                return 0;
-              }
-              return prev - 0.01;
-            });
-          }, 50);
-        }, 1000);
-      }
-    }, 30);
-
-    return () => clearInterval(interval);
-  }, [text]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Query submitted:", query);
+    // Handle the query submission logic here
+  };
 
   return (
     <div
-      className="absolute top-1/2 left-1/2 max-w-xl w-full text-white text-lg pointer-events-none text-center"
       style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
         transform: "translate(-50%, -50%)",
-        opacity,
-        backdropFilter: "blur(4px)",
-        transition: "opacity 0.5s",
+        zIndex: 10, // above canvas and other elements
+        textAlign: "center",
       }}
     >
-      {displayed}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ask something..."
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            marginRight: "10px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Query
+        </button>
+      </form>
     </div>
   );
 }
