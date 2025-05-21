@@ -38,7 +38,6 @@ export default function HallucinationInterface() {
     }
   };
 
-  // 🌟 Glitching words
   function spawnGlitchingWords(text) {
     const words = text.split(" ");
     const container = floatingRef.current;
@@ -50,10 +49,10 @@ export default function HallucinationInterface() {
       span.style.left = `${Math.random() * 100}%`;
       span.style.top = `${Math.random() * 100}%`;
       span.style.fontSize = `${14 + Math.random() * 12}px`;
-      span.style.color = "#99f0ff";
-      span.style.opacity = 0.8;
+      span.style.color = "#ff3e3e";
+      span.style.opacity = 0.9;
       span.style.pointerEvents = "none";
-      span.style.textShadow = "0 0 8px #99f0ff";
+      span.style.textShadow = "0 0 8px red";
       span.className = "glitch-word";
       container.appendChild(span);
 
@@ -61,23 +60,16 @@ export default function HallucinationInterface() {
     });
   }
 
+  // 💎 Track mouse for custom diamond cursor
   useEffect(() => {
-    const inputBox = document.getElementById("hallucination-input");
-
-    const handleFocus = () => {
-      if (cursorRef.current) cursorRef.current.classList.add("morphing");
+    const moveCursor = (e) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+      }
     };
-    const handleBlur = () => {
-      if (cursorRef.current) cursorRef.current.classList.remove("morphing");
-    };
-
-    inputBox?.addEventListener("focus", handleFocus);
-    inputBox?.addEventListener("blur", handleBlur);
-
-    return () => {
-      inputBox?.removeEventListener("focus", handleFocus);
-      inputBox?.removeEventListener("blur", handleBlur);
-    };
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
   }, []);
 
   return (
@@ -103,13 +95,14 @@ export default function HallucinationInterface() {
             fontSize: "1.2rem",
             width: "400px",
             borderRadius: "20px",
-            border: "1px solid rgba(153, 240, 255, 0.4)",
-            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255, 0, 0, 0.5)",
+            background: "rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(10px)",
-            color: "#99f0ff",
+            color: "#ff3e3e", // 🔥 visible input text
             textAlign: "center",
-            boxShadow: "0 0 12px rgba(153, 240, 255, 0.3)",
+            boxShadow: "0 0 12px rgba(255, 0, 0, 0.4)",
             outline: "none",
+            caretColor: "#ff3e3e",
           }}
         />
       </div>
@@ -128,22 +121,28 @@ export default function HallucinationInterface() {
         }}
       />
 
+      {/* 🔴 Custom Red Diamond Cursor */}
       <div
         ref={cursorRef}
-        className="morphing-cursor"
+        className="diamond-cursor"
         style={{
           position: "fixed",
           width: "20px",
           height: "20px",
-          borderRadius: "50%",
-          background: "#99f0ff",
+          background: "#ff3e3e",
+          transform: "rotate(45deg)",
           pointerEvents: "none",
           zIndex: 9999,
           mixBlendMode: "difference",
+          transition: "transform 0.1s ease-out",
         }}
       />
 
-      <style jsx>{`
+      <style jsx global>{`
+        * {
+          cursor: none !important;
+        }
+
         @keyframes glitch {
           0% {
             transform: translate(0, 0);
@@ -164,22 +163,6 @@ export default function HallucinationInterface() {
 
         .glitch-word {
           animation: glitch 0.2s infinite;
-        }
-
-        .morphing {
-          animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.3);
-          }
-          100% {
-            transform: scale(1);
-          }
         }
       `}</style>
     </>
