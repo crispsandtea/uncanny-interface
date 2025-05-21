@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from transformers import pipeline
@@ -23,7 +22,6 @@ def load_model():
     generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
     generator("Hello", max_length=5)  # optional warmup
 
-
 @app.get("/")
 async def root():
     return {"message": "Backend is running!"}
@@ -34,8 +32,3 @@ async def generate_text(request: Request):
     prompt = data.get("prompt", "")
     result = generator(prompt, max_length=100, num_return_sequences=1, truncation=True)
     return {"generated_text": result[0]["generated_text"]}
-
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=port)
