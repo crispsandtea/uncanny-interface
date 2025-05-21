@@ -14,6 +14,7 @@ export default function UncannyBackground() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
+
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
@@ -58,6 +59,7 @@ export default function UncannyBackground() {
 
       requestAnimationFrame(drawOrbs);
     }
+
     drawOrbs();
 
     const handleMouseMove = (e) => {
@@ -65,7 +67,9 @@ export default function UncannyBackground() {
       mouse.current.y = e.clientY;
       const x = (e.clientX / window.innerWidth - 0.5) * 80;
       const y = (e.clientY / window.innerHeight - 0.5) * 80;
-      eyeRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      if (eyeRef.current) {
+        eyeRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -82,10 +86,11 @@ export default function UncannyBackground() {
         ref={canvasRef}
         style={{
           position: "fixed",
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-          pointerEvents: "none", // ⛔ important to allow clicks
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: -1, // ⬅️ CRUCIAL: send it behind everything
         }}
       />
       <div
@@ -100,8 +105,8 @@ export default function UncannyBackground() {
           marginTop: "-30px",
           background: "radial-gradient(circle, #99f0ff 0%, #000 70%)",
           borderRadius: "50%",
-          zIndex: 1,
-          pointerEvents: "none", // ⛔ allow clicks to pass through
+          zIndex: -1, // ⬅️ Same: keep it in the back
+          pointerEvents: "none", // ⬅️ Don't block clicks
         }}
       />
     </>
