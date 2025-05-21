@@ -16,11 +16,10 @@ export default function HallucinationInterface() {
 
   // 🧠 Submit query to API
 const handleSubmit = async (e) => {
-  e.preventDefault(); // 🔥 THIS is what makes Enter work in a <form>
-  console.log("🔥 handleSubmit triggered");
-  if (!input.trim()) return;
+  e.preventDefault(); // This prevents the page reload
+  console.log("🔥 Form submitted");
 
-  console.log("🚀 Submitting:", input);
+  if (!input.trim()) return;
 
   try {
     const res = await fetch("https://uncanny-interface.onrender.com/generate", {
@@ -36,9 +35,10 @@ const handleSubmit = async (e) => {
     spawnGlitchWords(result);
     setInput("");
   } catch (err) {
-    console.error("❌ Failed to fetch:", err);
+    console.error("Failed to fetch:", err);
   }
 };
+
 
 
 
@@ -83,7 +83,7 @@ const handleSubmit = async (e) => {
   return (
     <>
       {/* Neon Input Box */}
-      <form
+<form
   onSubmit={handleSubmit}
   style={{
     position: "fixed",
@@ -101,6 +101,7 @@ const handleSubmit = async (e) => {
     className="hallucination-input"
   />
 </form>
+
 
 
 
