@@ -1,8 +1,7 @@
 services:
   - type: web
     name: uncanny-interface-1
-    env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host=0.0.0.0 --port=10000
+    env: docker
     plan: free
     autoDeploy: true
+    dockerfilePath: backend/Dockerfile
