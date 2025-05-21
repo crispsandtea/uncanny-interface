@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 
 export default function HallucinationInterface() {
   const [input, setInput] = useState("");
-  const [speaking, setSpeaking] = useState(false);
   const floatingRef = useRef(null);
 
   const handleSubmit = async (e) => {
@@ -10,40 +9,35 @@ export default function HallucinationInterface() {
       e.preventDefault();
       if (!input.trim()) return;
 
-      const responseText = await getOpenAIResponse(input);
+      try {
+        const res = await fetch("/api/hallucinate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic: input }),
+        });
 
-      // 🔊 Speak
-      const utterance = new SpeechSynthesisUtterance(responseText);
-      utterance.onstart = () => setSpeaking(true);
-      utterance.onend = () => setSpeaking(false);
-      speechSynthesis.speak(utterance);
+        const data = await res.json();
+        const responseText = data.result || "The interface refused to speak.";
 
-      // 🌟 Words
-      spawnGlowingWords(responseText);
-
-      setInput("");
+        speakResponse(responseText);
+        spawnGlowingWords(responseText);
+        setInput("");
+      } catch (err) {
+        console.error("Error:", err);
+      }
     }
   };
 
-  // 🔁 Real API Call
-  async function getOpenAIResponse(prompt) {
-    try {
-      const res = await fetch("/api/hallucinate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: prompt }),
-      });
+  const speakResponse = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    speechSynthesis.speak(utterance);
+    pulseEffect(); // trigger visual pulse
+  };
 
-      const data = await res.json();
-      return data.result || "The interface refused to answer.";
-    } catch (err) {
-      console.error(err);
-      return "The interface blinked, then vanished.";
-    }
-  }
-
-  // ✨ Floating word logic
-  function spawnGlowingWords(text) {
+  const spawnGlowingWords = (text) => {
     const words = text.split(" ");
     const container = floatingRef.current;
 
@@ -55,22 +49,24 @@ export default function HallucinationInterface() {
       span.style.top = `${Math.random() * 100}%`;
       span.style.fontSize = `${12 + Math.random() * 18}px`;
       span.style.color = "#99f0ff";
-      span.style.opacity = 0.85;
+      span.style.opacity = 0.8;
       span.style.pointerEvents = "none";
       span.style.animation = "floatWord 6s ease-out forwards";
       span.style.textShadow = "0 0 8px #99f0ff";
 
       container.appendChild(span);
-
-      setTimeout(() => {
-        container.removeChild(span);
-      }, 6000);
+      setTimeout(() => container.removeChild(span), 6000);
     });
-  }
+  };
+
+  const pulseEffect = () => {
+    const body = document.body;
+    body.classList.add("glitch-pulse");
+    setTimeout(() => body.classList.remove("glitch-pulse"), 500);
+  };
 
   return (
-    <div className={speaking ? "speaking" : ""}>
-      {/* Input Box */}
+    <>
       <div
         style={{
           position: "fixed",
@@ -93,12 +89,11 @@ export default function HallucinationInterface() {
             borderRadius: "12px",
             border: "1px solid #ccc",
             backgroundColor: "white",
-            boxShadow: "0 0 12px rgba(153, 240, 255, 0.6)",
+            color: "black",
           }}
         />
       </div>
 
-      {/* Floating Word Container */}
       <div
         ref={floatingRef}
         style={{
@@ -113,7 +108,6 @@ export default function HallucinationInterface() {
         }}
       />
 
-      {/* Styles */}
       <style jsx>{`
         @keyframes floatWord {
           0% {
@@ -129,19 +123,22 @@ export default function HallucinationInterface() {
           }
         }
 
-        .speaking {
-          animation: screenGlitch 0.08s infinite alternate;
+        :global(body.glitch-pulse) {
+          animation: pulse 0.4s ease-in-out;
         }
 
-        @keyframes screenGlitch {
+        @keyframes pulse {
           0% {
-            filter: hue-rotate(0deg) brightness(1);
+            filter: brightness(1) contrast(1);
+          }
+          50% {
+            filter: brightness(1.3) contrast(1.5) hue-rotate(30deg);
           }
           100% {
-            filter: hue-rotate(15deg) brightness(1.07);
+            filter: brightness(1) contrast(1);
           }
         }
       `}</style>
-    </div>
+    </>
   );
 }
