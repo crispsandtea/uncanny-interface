@@ -12,7 +12,7 @@ RUN pip install --upgrade pip \
 # Copy backend code only
 COPY backend/ .
 
-EXPOSE 8000
+EXPOSE 10000
 
 # Use Gunicorn with Uvicorn worker for better production performance
 CMD gunicorn -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:$PORT
