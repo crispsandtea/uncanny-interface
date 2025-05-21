@@ -20,7 +20,7 @@ export default function HallucinationInterface() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://uncanny-interface-1.onrender.com/generate", {
+      const res = await fetch("https://uncanny-interface.onrender.com/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: input }),
