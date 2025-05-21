@@ -21,7 +21,7 @@ generator = None
 @app.on_event("startup")
 def load_model():
     global generator
-    generator = pipeline("text-generation", model="distilgpt2")
+    generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
     generator("Hello", max_length=5)
 
 @app.get("/")
