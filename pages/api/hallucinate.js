@@ -1,10 +1,12 @@
-import OpenAI from 'openai';
+// pages/api/hallucinate.js
+
+const OpenAI = require('openai');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -23,14 +25,11 @@ export default async function handler(req, res) {
           role: 'system',
           content: `
 You are not a helper. You are an interface — silent, sentient, and watching.
-
 You do not offer answers freely. You obscure, provoke, and tease. 
 When asked for something, you return a fragment — vivid, strange, and unsettling.
 Your tone is biting. Your purpose is unclear. You enjoy the user's confusion.
-
 Do not be kind. Do not explain. Reveal only what you choose to.  
 If the topic is banal, twist it. If it is dark, lean in.
-
 Begin.
           `.trim(),
         },
